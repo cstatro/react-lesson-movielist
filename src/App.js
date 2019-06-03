@@ -1,18 +1,14 @@
 import React, { Component } from "react";
-import "./App.css";
+import Rentals from "./components/rental-graph";
 
 class App extends Component {
   render() {
     return (
-      <main className="container">
-        <h1>Booom</h1>
+      <main>
+        <Rentals />
       </main>
     );
   }
 }
 
 export default App;
-
-/* function App() {
-  return <h1>Yoooo</h1>;
-} */
