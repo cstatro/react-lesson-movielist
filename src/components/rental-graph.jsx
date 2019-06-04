@@ -58,7 +58,7 @@ class Rentals extends Component {
           </table>
           <span>
             <Pagination
-              itemsCount={this.state.movies.length}
+              itemsCount="d" //{this.state.movies.length}
               pageSize={pageSize}
               onPageChange={this.handlePageChange}
               currentPage={currentPage}
