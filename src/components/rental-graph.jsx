@@ -23,61 +23,64 @@ class Rentals extends Component {
     } else {
       const moviesAll = paginate(this.state.movies, currentPage, pageSize);
       return (
-        <React.Fragment>
-          <p>Showing {this.state.movies.length} movies in the database</p>
-
-          <MenuFilter
-            updateGenre={this.handleGenreUpdate}
-            genres={this.state.genres}
-            currentGenre={this.state.currentGenre}
-          />
-
-          <table className="table table-dark">
-            <thead>
-              <tr className="thead-light">
-                <th>Title</th>
-                <th>Genre</th>
-                <th>Stock</th>
-                <th>Rate</th>
-                <th />
-                <th />
-              </tr>
-            </thead>
-
-            <tbody>
-              {moviesAll.map(movie => (
-                <tr key={movie._id}>
-                  <td>{movie.title}</td>
-                  <td>{movie.genre.name}</td>
-                  <td>{movie.numberInStock}</td>
-                  <td>{movie.dailyRentalRate}</td>
-                  <td>
-                    <Like
-                      liked={movie.liked}
-                      setLike={() => this.handleLike(movie)}
-                    />
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => this.handleDelete(movie)}
-                      className="btn btn-danger"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <span>
-            <Pagination
-              itemsCount={this.state.movies.length}
-              pageSize={pageSize}
-              onPageChange={this.handlePageChange}
-              currentPage={currentPage}
+        <div className="row">
+          <div className="col-2">
+            <MenuFilter
+              updateGenre={this.handleGenreUpdate}
+              genres={this.state.genres}
+              currentGenre={this.state.currentGenre}
             />
-          </span>
-        </React.Fragment>
+          </div>
+          <div className="col">
+            <p>Showing {this.state.movies.length} movies in the database</p>
+
+            <table className="table table-dark">
+              <thead>
+                <tr className="thead-light">
+                  <th>Title</th>
+                  <th>Genre</th>
+                  <th>Stock</th>
+                  <th>Rate</th>
+                  <th />
+                  <th />
+                </tr>
+              </thead>
+
+              <tbody>
+                {moviesAll.map(movie => (
+                  <tr key={movie._id}>
+                    <td>{movie.title}</td>
+                    <td>{movie.genre.name}</td>
+                    <td>{movie.numberInStock}</td>
+                    <td>{movie.dailyRentalRate}</td>
+                    <td>
+                      <Like
+                        liked={movie.liked}
+                        setLike={() => this.handleLike(movie)}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => this.handleDelete(movie)}
+                        className="btn btn-danger"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <span>
+              <Pagination
+                itemsCount={this.state.movies.length}
+                pageSize={pageSize}
+                onPageChange={this.handlePageChange}
+                currentPage={currentPage}
+              />
+            </span>
+          </div>
+        </div>
         // <button onClick={this.logState}>Show state</button>
       );
     }
@@ -100,9 +103,10 @@ class Rentals extends Component {
   handleGenreUpdate = genre => {
     const allMovies = [...getMovies()];
     const currentGenre = genre;
-    const movies = allMovies.filter(movie => movie.genre.name === genre);
-    console.log("fart", movies);
-
+    const movies =
+      genre === "all"
+        ? allMovies
+        : allMovies.filter(movie => movie.genre.name === genre);
     this.setState({ currentGenre, movies });
     console.log("current genre is", this.state.currentGenre);
   };
