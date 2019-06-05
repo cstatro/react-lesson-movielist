@@ -17,11 +17,21 @@ class Rentals extends Component {
   };
   render() {
     console.log(this.state.currentGenre);
-    const { pageSize, currentPage } = this.state;
+    const {
+      pageSize,
+      currentPage,
+      movies: moviePreFilter,
+      currentGenre
+    } = this.state;
     if (this.state.movies.length === 0) {
       return <p>There are no movies in the database</p>;
     } else {
-      const moviesAll = paginate(this.state.movies, currentPage, pageSize);
+      const filtered =
+        currentGenre === "all"
+          ? moviePreFilter
+          : moviePreFilter.filter(movie => movie.genre.name === currentGenre);
+
+      const moviesAll = paginate(filtered, currentPage, pageSize);
       return (
         <div className="row">
           <div className="col-2">
@@ -32,7 +42,7 @@ class Rentals extends Component {
             />
           </div>
           <div className="col">
-            <p>Showing {this.state.movies.length} movies in the database</p>
+            <p>Showing {filtered.length} movies in the database</p>
 
             <table className="table table-dark">
               <thead>
@@ -73,7 +83,7 @@ class Rentals extends Component {
             </table>
             <span>
               <Pagination
-                itemsCount={this.state.movies.length}
+                itemsCount={filtered.length}
                 pageSize={pageSize}
                 onPageChange={this.handlePageChange}
                 currentPage={currentPage}
@@ -101,13 +111,9 @@ class Rentals extends Component {
   };
 
   handleGenreUpdate = genre => {
-    const allMovies = [...getMovies()];
     const currentGenre = genre;
-    const movies =
-      genre === "all"
-        ? allMovies
-        : allMovies.filter(movie => movie.genre.name === genre);
-    this.setState({ currentGenre, movies });
+
+    this.setState({ currentGenre, currentPage: 1 });
     console.log("current genre is", this.state.currentGenre);
   };
 
