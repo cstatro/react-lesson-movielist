@@ -54,6 +54,7 @@ class Rentals extends Component {
             <p>Showing {filtered.length} movies in the database</p>
             <MoviesTable
               moviesAll={moviesAll}
+              sortColumn={this.state.sortColumn}
               onLike={this.handleLike}
               onDelete={this.handleDelete}
               onSort={this.handleSort}
@@ -87,16 +88,8 @@ class Rentals extends Component {
     //
   };
 
-  handleSort = path => {
-    const sortColumn = { ...this.state.sortColumn };
-    if (sortColumn.path === path) {
-      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
-      console.log(sortColumn);
-    } else {
-      console.log(sortColumn);
-      sortColumn.path = path;
-      sortColumn.order = "asc";
-    }
+  handleSort = sortColumn => {
+    console.log(sortColumn);
     this.setState({ sortColumn });
   };
 
