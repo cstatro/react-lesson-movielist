@@ -4,22 +4,34 @@ import Like from "./like";
 import { getMovies } from "../services/fakeMovieService";
 import Pagination from "./paginator";
 import { paginate } from "../utils/paginate";
+import { getGenres } from "../services/fakeGenreService";
+import MenuFilter from "./menuFilter";
 
 class Rentals extends Component {
   state = {
     movies: getMovies(),
+    genres: getGenres(),
     pageSize: 4,
-    currentPage: 1
+    currentPage: 1,
+    currentGenre: "all"
   };
   render() {
+    console.log(this.state.currentGenre);
     const { pageSize, currentPage } = this.state;
     if (this.state.movies.length === 0) {
       return <p>There are no movies in the database</p>;
     } else {
-      const movies = paginate(this.state.movies, currentPage, pageSize);
+      const moviesAll = paginate(this.state.movies, currentPage, pageSize);
       return (
         <React.Fragment>
           <p>Showing {this.state.movies.length} movies in the database</p>
+
+          <MenuFilter
+            updateGenre={this.handleGenreUpdate}
+            genres={this.state.genres}
+            currentGenre={this.state.currentGenre}
+          />
+
           <table className="table table-dark">
             <thead>
               <tr className="thead-light">
@@ -31,8 +43,9 @@ class Rentals extends Component {
                 <th />
               </tr>
             </thead>
+
             <tbody>
-              {movies.map(movie => (
+              {moviesAll.map(movie => (
                 <tr key={movie._id}>
                   <td>{movie.title}</td>
                   <td>{movie.genre.name}</td>
@@ -58,7 +71,7 @@ class Rentals extends Component {
           </table>
           <span>
             <Pagination
-              itemsCount="d" //{this.state.movies.length}
+              itemsCount={this.state.movies.length}
               pageSize={pageSize}
               onPageChange={this.handlePageChange}
               currentPage={currentPage}
@@ -82,6 +95,16 @@ class Rentals extends Component {
     this.setState({ movies });
 
     //
+  };
+
+  handleGenreUpdate = genre => {
+    const allMovies = [...getMovies()];
+    const currentGenre = genre;
+    const movies = allMovies.filter(movie => movie.genre.name === genre);
+    console.log("fart", movies);
+
+    this.setState({ currentGenre, movies });
+    console.log("current genre is", this.state.currentGenre);
   };
 
   handlePageChange = page => {
