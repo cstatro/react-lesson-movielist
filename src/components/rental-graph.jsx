@@ -6,6 +6,8 @@ import Pagination from "./paginator";
 import { paginate } from "../utils/paginate";
 import { getGenres } from "../services/fakeGenreService";
 import MenuFilter from "./menuFilter";
+import MoviesTable from "./moviesTable";
+import _ from "lodash";
 
 class Rentals extends Component {
   state = {
@@ -13,7 +15,8 @@ class Rentals extends Component {
     genres: getGenres(),
     pageSize: 4,
     currentPage: 1,
-    currentGenre: "all"
+    currentGenre: "all",
+    sortColumn: { path: "title", order: "asc" }
   };
   render() {
     console.log(this.state.currentGenre);
@@ -31,7 +34,13 @@ class Rentals extends Component {
           ? moviePreFilter
           : moviePreFilter.filter(movie => movie.genre.name === currentGenre);
 
-      const moviesAll = paginate(filtered, currentPage, pageSize);
+      const sorted = _.orderBy(
+        filtered,
+        [this.state.sortColumn.path],
+        [this.state.sortColumn.order]
+      );
+
+      const moviesAll = paginate(sorted, currentPage, pageSize);
       return (
         <div className="row">
           <div className="col-2">
@@ -43,44 +52,12 @@ class Rentals extends Component {
           </div>
           <div className="col">
             <p>Showing {filtered.length} movies in the database</p>
-
-            <table className="table table-dark">
-              <thead>
-                <tr className="thead-light">
-                  <th>Title</th>
-                  <th>Genre</th>
-                  <th>Stock</th>
-                  <th>Rate</th>
-                  <th />
-                  <th />
-                </tr>
-              </thead>
-
-              <tbody>
-                {moviesAll.map(movie => (
-                  <tr key={movie._id}>
-                    <td>{movie.title}</td>
-                    <td>{movie.genre.name}</td>
-                    <td>{movie.numberInStock}</td>
-                    <td>{movie.dailyRentalRate}</td>
-                    <td>
-                      <Like
-                        liked={movie.liked}
-                        setLike={() => this.handleLike(movie)}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => this.handleDelete(movie)}
-                        className="btn btn-danger"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <MoviesTable
+              moviesAll={moviesAll}
+              onLike={this.handleLike}
+              onDelete={this.handleDelete}
+              onSort={this.handleSort}
+            />
             <span>
               <Pagination
                 itemsCount={filtered.length}
@@ -108,6 +85,19 @@ class Rentals extends Component {
     this.setState({ movies });
 
     //
+  };
+
+  handleSort = path => {
+    const sortColumn = { ...this.state.sortColumn };
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+      console.log(sortColumn);
+    } else {
+      console.log(sortColumn);
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+    this.setState({ sortColumn });
   };
 
   handleGenreUpdate = genre => {
